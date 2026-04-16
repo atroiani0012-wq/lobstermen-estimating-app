@@ -24,10 +24,26 @@ MAX_OUTPUT_TOKENS = 16000
 DEFAULT_WEB_SEARCH_MAX_USES = 15
 
 PROMPT_PATH = pathlib.Path(__file__).parent / "prompts" / "system.md"
+INDUSTRY_KB_PATH = pathlib.Path(__file__).parent / "prompts" / "industry_knowledge.md"
 
 
 def _load_system_prompt() -> str:
-    return PROMPT_PATH.read_text(encoding="utf-8")
+    """Load UMA institutional prompt + industry knowledge pack as a single system message."""
+    uma = PROMPT_PATH.read_text(encoding="utf-8")
+    parts = [uma]
+    if INDUSTRY_KB_PATH.exists():
+        industry = INDUSTRY_KB_PATH.read_text(encoding="utf-8")
+        parts.append(
+            "\n\n---\n\n"
+            "# APPENDIX — Industry Knowledge Reference\n\n"
+            "The following is authoritative industry reference material (FHWA, AASHTO, ASTM, "
+            "CSI, AACE, state DOT standards, subcontracting law, geotech methods). Use it to "
+            "sanity-check UMA numbers, cite standards when justifying assumptions, and flag "
+            "state-specific risks. UMA institutional data (above) takes precedence when the two "
+            "conflict on UMA-specific scopes.\n\n"
+            + industry
+        )
+    return "".join(parts)
 
 
 def _build_user_message(metadata: dict[str, Any], manual_notes: str, ingested: list[IngestedFile]) -> list[dict[str, Any]]:
