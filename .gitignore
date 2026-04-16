@@ -6,8 +6,8 @@ venv/
 .env
 .streamlit/secrets.toml
 .DS_Store
-outputs/
-tmp/
+/outputs/
+/tmp/
 *.xlsx.tmp
 *.docx.tmp
 .pytest_cache/

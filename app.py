@@ -23,6 +23,26 @@ from src.outputs.takeoff import build_takeoff_xlsx
 from src.outputs.project_info import build_project_info_docx
 from src.outputs.vendor_rfqs import build_vendor_rfqs_docx
 from src.outputs.proposal import build_proposal_docx
+from src.outputs.bidder_list import build_bidder_list_xlsx
+from src.drive_pull import pull_folder, DEFAULT_SKIP_FOLDER_NAMES
+
+
+# --- Runtime budget constants ----------------------------------------------------
+
+MAX_ANALYSIS_SECONDS = 30 * 60  # 30 minutes — per Tony's rule
+WARN_THRESHOLD_SECONDS = MAX_ANALYSIS_SECONDS * 0.8  # warn at 80% burn
+
+# Rough ETA model (seconds):
+#   ingest: ~3s per file + ~0.5s per MB of PDF
+#   claude analyze (no web search): ~45s baseline + 15s per 10 files
+#   web search: ~8s per search, up to 15
+#   output build: ~3s total
+def _estimate_runtime(num_files: int, total_mb: float, web_enabled: bool) -> float:
+    ingest = 3 * num_files + 0.5 * total_mb
+    analyze = 45 + 15 * (num_files / 10)
+    web = (8 * 15) if web_enabled else 0
+    build = 3
+    return ingest + analyze + web + build
 
 
 # --- Page config ----------------------------------------------------------------
@@ -96,14 +116,17 @@ def view_landing() -> None:
             "- **Takeoff spreadsheet** (.xlsx) — UMA template layout, paste into your master estimator\n"
             "- **Project Info brief** (.docx) — scope summary, tests, design, unknowns, risks, equipment, vendors\n"
             "- **Vendor RFQ drafts** (.docx) — one section per vendor, project-specific quantities\n"
-            "- **First-draft Cost Proposal** (.docx)"
+            "- **First-draft Cost Proposal** (.docx)\n"
+            "- **Prospective Bidder List** (.xlsx) — companies that requested bid docs, pulled from web research"
         )
 
     with st.expander("System status"):
         key = _get_api_key()
         st.write("**Anthropic API key:**", "✅ configured" if key else "❌ missing — set ANTHROPIC_API_KEY in secrets")
         st.write("**Model:**", _get_model())
-        st.write("**Max upload size:**", "1 GB per file")
+        st.write("**Max upload size:**", "5 GB per file")
+        st.write("**Web research:**", "enabled (max 15 searches)")
+        st.write("**Max analysis runtime:**", "30 minutes")
 
 
 def view_create() -> None:
@@ -139,10 +162,23 @@ def view_create() -> None:
             help="Anything you want Claude to factor in that isn't in the uploaded files.",
         )
 
-        st.markdown("### 2. Drop bid-package files")
+        st.markdown("### 2. Pull files from Google Drive (recommended)")
+        st.caption(
+            "Paste the project folder URL. Backend pulls every file recursively, "
+            f"auto-skipping: {', '.join(sorted(DEFAULT_SKIP_FOLDER_NAMES))}. "
+            "Grant the service account Viewer access on the folder first."
+        )
+        drive_url = st.text_input(
+            "Google Drive folder URL or ID",
+            value="",
+            placeholder="https://drive.google.com/drive/folders/1abc...XYZ",
+            label_visibility="collapsed",
+        )
+
+        st.markdown("### 2b. Or drop files directly")
         st.caption(
             "Drag and drop (or click to browse). Supported: PDF, DOCX, XLSX/XLS/CSV, PNG/JPG, TXT. "
-            "Up to 1 GB per file. Drop everything — drawings, specs, geotech, RFQs, photos."
+            "Up to 1 GB per file."
         )
         uploaded = st.file_uploader(
             "Drop files here",
@@ -163,8 +199,8 @@ def view_create() -> None:
         submitted = st.form_submit_button("🚀  Analyze & Generate", type="primary", use_container_width=True)
 
     if submitted:
-        if not uploaded and not manual_notes.strip() and not notes.strip():
-            st.error("Upload at least one file or enter manual notes before analyzing.")
+        if not uploaded and not drive_url.strip() and not manual_notes.strip() and not notes.strip():
+            st.error("Paste a Drive folder URL, upload files, or enter manual notes before analyzing.")
             return
 
         meta = {
@@ -176,39 +212,134 @@ def view_create() -> None:
         st.session_state.meta = meta
         st.session_state.manual_notes = manual_notes
 
-        file_tuples = [(f.name, f.getvalue()) for f in (uploaded or [])]
+        file_tuples: list[tuple[str, bytes]] = []
+
+        # Pull from Drive first (typically the bulk of the files)
+        if drive_url.strip():
+            pull_status = st.status("📂 Pulling files from Google Drive…", expanded=True)
+            try:
+                def _cb(msg: str) -> None:
+                    pull_status.write(msg)
+                result = pull_folder(drive_url.strip(), progress_cb=_cb)
+                pull_status.write(
+                    f"✅ {len(result.files)} file(s), "
+                    f"{result.total_bytes/1024/1024:.1f} MB total"
+                )
+                if result.skipped_folders:
+                    pull_status.write(
+                        f"   Skipped folders: {', '.join(result.skipped_folders)}"
+                    )
+                if result.skipped_files:
+                    pull_status.write(
+                        f"   Skipped files: {len(result.skipped_files)} "
+                        f"(e.g. {result.skipped_files[0] if result.skipped_files else ''})"
+                    )
+                if result.errors:
+                    for err in result.errors[:5]:
+                        pull_status.write(f"   ⚠ {err}")
+                pull_status.update(state="complete")
+                file_tuples.extend(result.files)
+            except Exception as e:
+                pull_status.update(label=f"❌ Drive pull failed: {e}", state="error")
+                st.exception(e)
+                return
+
+        # Then append any manually-uploaded files
+        file_tuples.extend((f.name, f.getvalue()) for f in (uploaded or []))
+
+        if not file_tuples and not manual_notes.strip() and not notes.strip():
+            st.error("No files pulled or uploaded, and no manual notes — nothing to analyze.")
+            return
+
         _run_analysis(meta, manual_notes, file_tuples, key)
 
 
 def _run_analysis(meta: dict[str, Any], manual_notes: str, file_tuples: list[tuple[str, bytes]], api_key: str) -> None:
+    # Pre-flight estimate
+    total_mb = sum(len(data) for _, data in file_tuples) / 1024 / 1024
+    est_secs = _estimate_runtime(len(file_tuples), total_mb, web_enabled=True)
+    est_mins = est_secs / 60
+
+    st.info(f"📊 Estimated analysis time: ~{est_mins:.1f} minutes")
+
+    # 30-min ceiling warning
+    if est_secs > WARN_THRESHOLD_SECONDS:
+        st.warning(
+            f"⚠️  This estimate ({est_mins:.1f} min) exceeds our 80% safety margin "
+            f"(24 min). Full analysis may run close to 30 min. "
+            "Proceed only if you're comfortable with potential delays."
+        )
+        proceed_anyway_key = "proceed_anyway_large_analysis"
+        if proceed_anyway_key not in st.session_state:
+            st.session_state[proceed_anyway_key] = False
+        st.session_state[proceed_anyway_key] = st.checkbox(
+            "Proceed anyway — I understand this may run over 30 min"
+        )
+        if not st.session_state[proceed_anyway_key]:
+            st.stop()
+
     status = st.status("Analyzing bid package…", expanded=True)
+    t_start = time.time()
+
     try:
+        # Ingest phase
         status.write(f"📥 Ingesting {len(file_tuples)} file(s)…")
-        t0 = time.time()
+        t_ingest_start = time.perf_counter()
         ingested = ingest_many(file_tuples)
         for f in ingested:
             status.write(f"   • {f.text_summary}")
+        t_ingest_end = time.perf_counter()
+        ingest_elapsed = t_ingest_end - t_ingest_start
+
+        # Analyze phase
         status.write(f"📤 Calling Claude ({_get_model()})…")
-        t1 = time.time()
-        analysis = analyze(meta, manual_notes, ingested, api_key=api_key, model=_get_model())
-        t2 = time.time()
-        status.write(f"   ✅ Claude done in {t2-t1:.1f}s "
+        t_analyze_start = time.perf_counter()
+
+        def _progress_cb(msg: str) -> None:
+            elapsed_total = time.perf_counter() - t_analyze_start
+            remaining_budget = MAX_ANALYSIS_SECONDS - (time.time() - t_start)
+            eta_str = f"{remaining_budget/60:.1f}m" if remaining_budget > 0 else "⏱️ over"
+            status.write(f"{msg} · Elapsed {elapsed_total:.0f}s, ETA {eta_str} (analyze)")
+
+        analysis = analyze(
+            meta, manual_notes, ingested, api_key=api_key, model=_get_model(),
+            progress_cb=_progress_cb
+        )
+        t_analyze_end = time.perf_counter()
+        analyze_elapsed = t_analyze_end - t_analyze_start
+
+        status.write(f"   ✅ Claude done in {analyze_elapsed:.1f}s "
                      f"(in: {analysis['_meta']['usage']['input_tokens']} tok, "
                      f"out: {analysis['_meta']['usage']['output_tokens']} tok)")
 
+        # Check hard ceiling before output build
+        if time.time() - t_start > MAX_ANALYSIS_SECONDS:
+            status.write(f"⚠️  ⏱️  EXCEEDED 30-MIN BUDGET by {(time.time()-t_start-MAX_ANALYSIS_SECONDS)/60:.1f} min. "
+                         "Proceeding to output generation anyway.")
+
+        # Build outputs phase
         status.write("📝 Building outputs…")
+        t_build_start = time.perf_counter()
         outputs = {
             "01_Takeoff.xlsx": build_takeoff_xlsx(analysis),
             "02_Project_Info.docx": build_project_info_docx(analysis),
             "03_Vendor_RFQs.docx": build_vendor_rfqs_docx(analysis),
             "04_Cost_Proposal.docx": build_proposal_docx(analysis),
         }
+        # Conditionally add 5th output
+        if analysis.get("web_research", {}).get("bidder_list"):
+            outputs["05_Bidder_List.xlsx"] = build_bidder_list_xlsx(analysis)
         for name in outputs:
             status.write(f"   ✅ {name} ({len(outputs[name])/1024:.0f} KB)")
+        t_build_end = time.perf_counter()
+        build_elapsed = t_build_end - t_build_start
 
+        total_elapsed = time.time() - t_start
         st.session_state.analysis = analysis
         st.session_state.outputs = outputs
-        status.update(label=f"✅ Done in {time.time()-t0:.1f}s", state="complete")
+        status.update(label=f"✅ Done in {total_elapsed:.1f}s "
+                           f"(ingest {ingest_elapsed:.1f}s, analyze {analyze_elapsed:.1f}s, build {build_elapsed:.1f}s)",
+                     state="complete")
         _goto("results")
     except Exception as e:
         status.update(label=f"❌ {e}", state="error")
@@ -235,7 +366,8 @@ def view_results() -> None:
         _goto("create")
 
     st.markdown("## 📦 Download outputs")
-    cols = st.columns(4)
+    num_outputs = len(outputs)
+    cols = st.columns(num_outputs if num_outputs == 5 else 4)
     for i, (name, data) in enumerate(outputs.items()):
         with cols[i]:
             mime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" if name.endswith(".xlsx") \
@@ -249,7 +381,7 @@ def view_results() -> None:
             )
 
     st.markdown("## 🔎 Preview")
-    tabs = st.tabs(["Scope", "Takeoff", "Testing", "Design", "Unknowns", "Risks", "Equipment", "Vendors", "Raw JSON"])
+    tabs = st.tabs(["Scope", "Takeoff", "Testing", "Design", "Unknowns", "Risks", "Equipment", "Vendors", "🌐 Research", "Raw JSON"])
 
     with tabs[0]:
         st.write(f"**Description:** {project.get('description', '')}")
@@ -304,6 +436,34 @@ def view_results() -> None:
                     st.write("Testing items:", v["testing_items_for_rfq"])
 
     with tabs[8]:
+        wr = analysis.get("web_research", {})
+        st.write("**Project metadata (from web research)**")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write("**Owner/Grantee:**", wr.get("owner_confirmed", "(not found)"))
+            st.write("**EOR (Engineer of Record):**", wr.get("eor", "(not found)"))
+        with col2:
+            st.write("**Budget/Award Value:**", wr.get("budget_or_award_value", "(not found)"))
+
+        st.write("")
+        st.write("**Prospective bidders list**")
+        bidders = wr.get("bidder_list") or []
+        if bidders:
+            st.dataframe(bidders, use_container_width=True)
+        else:
+            st.write("(no bidders found)")
+
+        st.write("")
+        st.write("**Research findings**")
+        findings = wr.get("findings") or []
+        if findings:
+            st.dataframe(findings, use_container_width=True)
+        else:
+            st.write("(no additional findings)")
+
+        st.caption(f"Searches attempted: {analysis.get('_meta', {}).get('web_searches_run', 0)}")
+
+    with tabs[9]:
         st.json(analysis)
 
 
