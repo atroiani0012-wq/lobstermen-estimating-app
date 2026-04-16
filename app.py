@@ -12,6 +12,8 @@ import datetime as _dt
 import io
 import json
 import os
+import pathlib as _pathlib
+import subprocess as _subprocess
 import time
 from typing import Any
 
@@ -25,6 +27,32 @@ from src.outputs.vendor_rfqs import build_vendor_rfqs_docx
 from src.outputs.proposal import build_proposal_docx
 from src.outputs.bidder_list import build_bidder_list_xlsx
 from src.drive_pull import pull_folder, DEFAULT_SKIP_FOLDER_NAMES
+
+
+# --- Deployed build fingerprint --------------------------------------------------
+# Captured at import time so the Streamlit admin / smoke tests can confirm
+# which commit is actually live without logging into the app.
+def _read_deployed_sha() -> str:
+    # 1. Streamlit Cloud exposes the commit SHA via env var during builds.
+    for var in ("STREAMLIT_COMMIT_SHA", "GIT_COMMIT", "RENDER_GIT_COMMIT"):
+        val = os.environ.get(var)
+        if val:
+            return val[:12]
+    # 2. Local dev / generic container: ask git if the repo is there.
+    try:
+        root = _pathlib.Path(__file__).resolve().parent
+        out = _subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "--short=12", "HEAD"],
+            stderr=_subprocess.DEVNULL,
+            timeout=2,
+        )
+        return out.decode().strip()
+    except Exception:
+        pass
+    return "unknown"
+
+
+DEPLOYED_SHA = _read_deployed_sha()
 
 
 # --- Runtime budget constants ----------------------------------------------------
@@ -124,9 +152,10 @@ def view_landing() -> None:
         key = _get_api_key()
         st.write("**Anthropic API key:**", "✅ configured" if key else "❌ missing — set ANTHROPIC_API_KEY in secrets")
         st.write("**Model:**", _get_model())
-        st.write("**Max upload size:**", "5 GB per file")
+        st.write("**Max upload size:**", "1 GB per file")
         st.write("**Web research:**", "enabled (max 15 searches)")
         st.write("**Max analysis runtime:**", "30 minutes")
+        st.write("**Deployed build:**", f"`{DEPLOYED_SHA}`")
 
 
 def view_create() -> None:
@@ -468,6 +497,15 @@ def view_results() -> None:
 
 
 # --- Router ---------------------------------------------------------------------
+
+# Lightweight "version" view: hit the app with ?v=1 to see the deployed SHA
+# as plain text in the page header — useful for smoke-testing from a browser
+# without clicking through the UI. Bypasses login redirect once authenticated.
+_qp = st.query_params
+if _qp.get("v") == "1" or _qp.get("version") == "1":
+    st.markdown(f"## Deployed build: `{DEPLOYED_SHA}`")
+    st.caption(f"Built at import time from environment (Streamlit Cloud sets STREAMLIT_COMMIT_SHA).")
+    st.stop()
 
 VIEWS = {"landing": view_landing, "create": view_create, "results": view_results}
 VIEWS[st.session_state.view]()
