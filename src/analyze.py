@@ -17,7 +17,7 @@ from anthropic import Anthropic
 from .ingest import IngestedFile
 
 DEFAULT_MODEL = "claude-sonnet-4-6"
-MAX_OUTPUT_TOKENS = 16000
+MAX_OUTPUT_TOKENS = 64000
 
 # Web search tool — Anthropic server-side. Let Claude do the research loop.
 # Capped to keep runtime reasonable and avoid runaway tool calls.

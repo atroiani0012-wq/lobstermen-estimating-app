@@ -11,3 +11,8 @@ venv/
 *.xlsx.tmp
 *.docx.tmp
 .pytest_cache/
+
+# Service-account credentials (defense-in-depth; secrets.toml already covered)
+*service*account*.json
+gdrive*.json
+*-credentials.json
