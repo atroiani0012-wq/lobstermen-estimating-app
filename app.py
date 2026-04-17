@@ -25,7 +25,10 @@ from typing import Any
 import streamlit as st
 
 from src.ingest import ingest_many, ingest_file
-from src.analyze import analyze, analyze_batched, estimate_ingested_tokens, DEFAULT_MODEL
+from src.analyze import (
+    analyze, analyze_batched, estimate_ingested_tokens, DEFAULT_MODEL,
+    run_vision_pipeline, filter_plan_sheet_pdfs,
+)
 from src.outputs.takeoff import build_takeoff_xlsx
 from src.outputs.project_info import build_project_info_docx
 from src.outputs.vendor_rfqs import build_vendor_rfqs_docx
@@ -386,6 +389,27 @@ def _run_analysis(
         est_in = estimate_ingested_tokens(ingested)
         status.write(f"📊 Estimated input: ~{_format_tokens(est_in)} tokens across {len(ingested)} files")
 
+        # --- Vision preprocess on plan-sheet PDFs (Phase 1 + Phase 2) ---
+        # Collect the raw PDF bytes of every uploaded/Drive file, then filter
+        # to plan-sheet-looking PDFs. Text-heavy specs are skipped — their
+        # dimensions live in tables, not drawings.
+        all_raw_pdfs = [(name, data) for name, data in uploaded
+                        if name.lower().endswith(".pdf")]
+        # Drive-pulled files already went through ingest_file directly; we
+        # still have their bytes via the download loop above — skip those
+        # here to keep the vision pipeline as an upload-time helper.
+        plan_sheet_pdfs = filter_plan_sheet_pdfs(all_raw_pdfs)
+        vision_data = None
+        if plan_sheet_pdfs:
+            status.write(f"🔍 Running vision pipeline on {len(plan_sheet_pdfs)} plan-sheet PDF(s)…")
+            try:
+                vision_data = run_vision_pipeline(plan_sheet_pdfs, api_key=api_key, model=_get_model())
+                page_ct = sum(len(v.get("pages") or []) for v in vision_data)
+                status.write(f"   ✅ Vision extracted {page_ct} page(s) of structured data")
+            except Exception as e:
+                status.write(f"   ⚠️ Vision pipeline failed: {e} — continuing without it")
+                vision_data = None
+
         status.write(f"📤 Calling Claude ({_get_model()})…")
         t1 = time.time()
 
@@ -398,6 +422,7 @@ def _run_analysis(
         analysis = analyze_batched(
             meta, manual_notes, ingested,
             api_key=api_key, model=_get_model(), on_batch=_on_batch,
+            vision_data=vision_data,
         )
         t2 = time.time()
         usage = (analysis.get("_meta") or {}).get("usage") or {"input_tokens": 0, "output_tokens": 0}
