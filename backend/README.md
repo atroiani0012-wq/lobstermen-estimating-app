@@ -58,9 +58,15 @@ python3 -m backend.process_bid --input payload.json --output-dir /tmp/uma-out
   "files": [
     {"name": "drawings.pdf", "data_base64": "JVBERi0..."},
     {"name": "geotech.pdf", "data_base64": "JVBERi0..."}
-  ]
+  ],
+  "drive_folder": "https://drive.google.com/drive/folders/<ID>",
+  "drive_recursive": true
 }
 ```
+
+Either `files` or `drive_folder` (or both) must be provided. `drive_folder`
+accepts a bare folder ID or any Drive URL containing one. Server-side
+downloads let you process bid packages well beyond browser upload limits.
 
 Response (on success):
 
@@ -97,6 +103,51 @@ On error: `{"ok": false, "error": "...", "traceback": "..."}`.
 | `generate_proposal.py` | Builds `04_Cost_Proposal.docx` |
 | `process_bid.py` | Orchestrator — JSON in, 4 deliverables out |
 | `server.py` | `http.server` wrapper around `process_bid.py` |
+
+## Google Drive integration
+
+Bid packages routinely run 5-10 GB (plan sets, high-res drawings, CAD
+exports) — too large for browser upload. The backend downloads from a
+Drive folder server-side instead. Users drop files into a Drive folder,
+share it with the service account, and paste the folder URL into the UI.
+
+### Service account setup
+
+1. In Google Cloud Console, create a project and enable the **Google Drive
+   API**.
+2. Create a Service Account with no roles (Drive uses resource-level
+   sharing, not IAM).
+3. Generate a JSON key for the service account.
+4. Share the target Drive folder(s) with the service account's email
+   (`…@…iam.gserviceaccount.com`) as **Viewer**. Parent-level sharing
+   cascades to subfolders.
+
+### Providing credentials
+
+The backend reads creds in this order:
+1. `service_account` field on the request payload (inline JSON string or dict)
+2. `GOOGLE_SERVICE_ACCOUNT_JSON` env var (inline JSON)
+3. `GOOGLE_APPLICATION_CREDENTIALS` env var (path to the JSON file)
+
+### Supported file types
+
+Regular PDF / DOCX / XLSX / images / TXT files pass through to ingest.
+Google-native files are auto-exported:
+
+| Google type  | Exported as |
+|---|---|
+| Docs         | `.docx` |
+| Spreadsheets | `.xlsx` |
+| Slides       | `.pdf` |
+| Drawings     | `.png` |
+
+Forms, Sites, and Jamboards are skipped with a note.
+
+### Size caps
+
+Defaults: 250 MB per file, 8 GB total. Overridable by passing
+`max_file_bytes` in the payload. Files over the cap appear in the
+`drive.skipped[]` list in the response with a reason.
 
 ## Frontend bridge
 

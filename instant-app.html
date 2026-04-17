@@ -29,374 +29,283 @@
   }
   * { box-sizing: border-box; }
   html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--text);
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
-    min-height: 100vh;
+    font-size: 14px; line-height: 1.5; min-height: 100vh;
   }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
 
-  .app {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 24px 24px 64px;
-  }
+  .app { max-width: 1100px; margin: 0 auto; padding: 24px 24px 64px; }
 
   .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 8px 0 24px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 8px 0 24px;
+    border-bottom: 1px solid var(--border); margin-bottom: 24px;
   }
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+  .brand { display: flex; align-items: center; gap: 14px; }
   .brand-mark {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    width: 40px; height: 40px; border-radius: 8px;
     background: linear-gradient(135deg, var(--uma-navy), var(--accent));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: #fff;
-    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; letter-spacing: 0.5px; color: #fff; font-size: 14px;
   }
-  .brand-text h1 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-  .brand-text p {
-    margin: 2px 0 0;
-    font-size: 12px;
-    color: var(--text-muted);
-  }
+  .brand-text h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+  .brand-text p { margin: 2px 0 0; font-size: 12px; color: var(--text-muted); }
   .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--text-muted);
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    font-size: 12px; color: var(--text-muted);
   }
-  .status-pill .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--text-muted);
-  }
+  .status-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); }
   .status-pill.ok .dot { background: var(--success); }
-  .status-pill.warn .dot { background: var(--warn); }
-  .status-pill.err .dot { background: var(--error); }
 
   .panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 20px;
+    background: var(--bg-panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; margin-bottom: 20px;
   }
   .panel h2 {
     margin: 0 0 4px;
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    color: var(--text-muted);
+    font-size: 15px; font-weight: 600;
+    letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-muted);
   }
-  .panel .subtitle {
-    color: var(--text-muted);
-    font-size: 13px;
-    margin-bottom: 18px;
-  }
+  .panel .subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 18px; }
 
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .field label {
-    font-size: 12px;
-    color: var(--text-muted);
-    letter-spacing: 0.02em;
-  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 12px; color: var(--text-muted); letter-spacing: 0.02em; }
   .field input, .field select, .field textarea {
-    background: var(--bg-panel-2);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 14px;
-    font-family: inherit;
-    outline: none;
-    transition: border-color .15s;
+    background: var(--bg-panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-size: 14px; font-family: inherit;
+    outline: none; transition: border-color .15s;
   }
   .field textarea { resize: vertical; min-height: 80px; }
-  .field input:focus, .field select:focus, .field textarea:focus {
-    border-color: var(--accent);
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tab {
+    padding: 8px 14px; border-radius: 8px;
+    background: var(--bg-panel-2); border: 1px solid var(--border);
+    color: var(--text-muted); cursor: pointer; font-size: 13px;
+    font-family: inherit;
+  }
+  .tab.active {
+    color: var(--text); border-color: var(--accent);
+    background: var(--accent-soft);
   }
 
   .dropzone {
-    border: 2px dashed var(--border-strong);
-    border-radius: 10px;
-    padding: 32px 20px;
-    text-align: center;
-    cursor: pointer;
+    border: 2px dashed var(--border-strong); border-radius: 10px;
+    padding: 32px 20px; text-align: center; cursor: pointer;
     background: var(--bg-panel-2);
     transition: border-color .15s, background .15s;
   }
-  .dropzone.drag {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
-  .dropzone .big {
-    font-size: 15px;
-    color: var(--text);
-    margin-bottom: 4px;
-    font-weight: 500;
-  }
-  .dropzone .small {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
+  .dropzone.drag { border-color: var(--accent); background: var(--accent-soft); }
+  .dropzone .big { font-size: 15px; margin-bottom: 4px; font-weight: 500; }
+  .dropzone .small { font-size: 12px; color: var(--text-muted); }
 
-  .files-list {
-    margin-top: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+  .files-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
   .files-list .file-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--bg-panel-2);
-    border: 1px solid var(--border);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg-panel-2); border: 1px solid var(--border);
+    padding: 8px 12px; border-radius: 8px; font-size: 13px;
   }
-  .files-list .file-row .meta {
-    color: var(--text-muted);
-    font-size: 12px;
-    margin-right: 12px;
-  }
+  .files-list .file-row .meta { color: var(--text-muted); font-size: 12px; margin-right: 12px; }
   .files-list .file-row button {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 4px 6px;
-    font-size: 14px;
+    background: transparent; border: none; color: var(--text-muted);
+    cursor: pointer; padding: 4px 6px; font-size: 14px;
   }
   .files-list .file-row button:hover { color: var(--error); }
 
   .btn {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background .15s, transform .05s;
-    font-family: inherit;
+    background: var(--accent); color: white;
+    border: none; padding: 12px 20px; border-radius: 8px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    transition: background .15s, transform .05s; font-family: inherit;
   }
   .btn:hover { background: var(--accent-hover); }
   .btn:active { transform: translateY(1px); }
   .btn:disabled {
-    background: var(--bg-panel-2);
-    color: var(--text-muted);
-    cursor: not-allowed;
-    border: 1px solid var(--border);
+    background: var(--bg-panel-2); color: var(--text-muted);
+    cursor: not-allowed; border: 1px solid var(--border);
   }
   .btn.secondary {
-    background: var(--bg-panel-2);
-    color: var(--text);
+    background: var(--bg-panel-2); color: var(--text);
     border: 1px solid var(--border-strong);
   }
   .btn.secondary:hover { background: var(--bg-panel); }
   .btn.ghost {
-    background: transparent;
-    color: var(--text-muted);
-    padding: 8px 12px;
-    font-weight: 400;
-    border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted);
+    padding: 8px 12px; font-weight: 400; border: 1px solid var(--border);
   }
   .btn.ghost:hover { color: var(--text); border-color: var(--border-strong); }
+  .btn.sm { padding: 6px 10px; font-size: 12px; }
 
   .actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 18px;
-    gap: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 18px; gap: 12px;
   }
 
-  .progress {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 12px;
+  .drive-bar {
+    display: flex; gap: 10px; align-items: stretch;
   }
-  .progress .step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    background: var(--bg-panel-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+  .drive-bar input[type="text"] {
+    flex: 1; background: var(--bg-panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-size: 14px; font-family: inherit;
+    outline: none;
+  }
+  .drive-bar input[type="text"]:focus { border-color: var(--accent); }
+
+  .scan-meta {
+    margin-top: 14px; padding: 12px;
+    background: var(--bg-panel-2); border: 1px solid var(--border);
+    border-radius: 8px; font-size: 13px;
+  }
+
+  .file-tree {
+    margin-top: 16px; border: 1px solid var(--border); border-radius: 8px;
+    max-height: 420px; overflow-y: auto;
+  }
+  .tree-folder {
+    padding: 8px 12px; font-weight: 600; font-size: 12px;
+    color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;
+    background: var(--bg-panel-2); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+  }
+  .tree-file {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
     font-size: 13px;
   }
-  .progress .step.active {
-    border-color: var(--accent);
-    background: var(--accent-soft);
+  .tree-file:last-child { border-bottom: none; }
+  .tree-file .kind-tag {
+    font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600;
+    min-width: 64px; text-align: center;
   }
-  .progress .step.done {
-    border-color: var(--success);
-    background: var(--success-soft);
+  .tree-file .kind-supported { background: var(--accent-soft); color: #c2d5fa; }
+  .tree-file .kind-cad       { background: var(--warn-soft);   color: #fbe4a9; }
+  .tree-file .kind-media     { background: var(--bg-panel);    color: var(--text-muted); }
+  .tree-file .kind-archive   { background: var(--bg-panel);    color: var(--text-muted); }
+  .tree-file .kind-other     { background: var(--bg-panel);    color: var(--text-muted); }
+  .tree-file .kind-skipped   { background: var(--error-soft);  color: #ffccd0; }
+  .tree-file .tree-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tree-file .tree-size { color: var(--text-muted); font-size: 12px; min-width: 70px; text-align: right; }
+
+  .tree-toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; background: var(--bg-panel-2); border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--text-muted);
   }
+  .tree-toolbar .actions-inline { display: flex; gap: 8px; }
+
+  .estimate-card {
+    margin-top: 14px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  }
+  .estimate-stat {
+    background: var(--bg-panel-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .estimate-stat .label {
+    font-size: 11px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+  }
+  .estimate-stat .value { font-size: 16px; font-weight: 600; }
+  .estimate-stat.warn { border-color: var(--warn); }
+
+  .progress { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+  .progress .step {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: var(--bg-panel-2);
+    border: 1px solid var(--border); border-radius: 8px; font-size: 13px;
+  }
+  .progress .step.active { border-color: var(--accent); background: var(--accent-soft); }
+  .progress .step.done { border-color: var(--success); background: var(--success-soft); }
   .progress .step .ico { width: 16px; text-align: center; }
+
+  .progress-bar {
+    height: 6px; background: var(--bg-panel-2); border-radius: 3px;
+    overflow: hidden; margin-top: 6px;
+  }
+  .progress-bar .fill {
+    height: 100%; background: var(--accent); transition: width 0.3s;
+  }
+
+  .live-log {
+    margin-top: 14px; max-height: 260px; overflow-y: auto;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-family: ui-monospace, Menlo, monospace;
+    font-size: 11.5px; color: var(--text-muted);
+  }
+  .live-log .line { padding: 1px 0; }
+  .live-log .line.err { color: #ffccd0; }
 
   .spinner {
     width: 14px; height: 14px;
     border: 2px solid transparent;
-    border-top-color: var(--accent);
-    border-right-color: var(--accent);
-    border-radius: 50%;
-    display: inline-block;
+    border-top-color: var(--accent); border-right-color: var(--accent);
+    border-radius: 50%; display: inline-block;
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .downloads {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 8px;
-  }
+  .downloads { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
   .download-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    background: var(--bg-panel-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    transition: border-color .15s, transform .05s;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px; background: var(--bg-panel-2);
+    border: 1px solid var(--border); border-radius: 10px;
   }
   .download-card:hover { border-color: var(--border-strong); }
-  .download-card .info .name {
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 2px;
-  }
-  .download-card .info .desc {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-  .download-card .info .size {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 4px;
-  }
+  .download-card .info .name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .download-card .info .desc { font-size: 12px; color: var(--text-muted); }
+  .download-card .info .size { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
   .download-card .download-btn {
-    background: var(--accent);
-    color: white;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
+    background: var(--accent); color: white;
+    padding: 8px 14px; border-radius: 6px;
+    font-size: 13px; font-weight: 500; border: none; cursor: pointer;
   }
   .download-card .download-btn:hover { background: var(--accent-hover); }
 
   .alert {
-    padding: 12px 14px;
-    border-radius: 8px;
-    margin: 12px 0;
-    font-size: 13px;
-    border: 1px solid;
+    padding: 12px 14px; border-radius: 8px; margin: 12px 0;
+    font-size: 13px; border: 1px solid;
   }
   .alert.error { background: var(--error-soft); border-color: var(--error); color: #ffccd0; }
-  .alert.warn { background: var(--warn-soft); border-color: var(--warn); color: #fbe4a9; }
-  .alert.info { background: var(--accent-soft); border-color: var(--accent); color: #c2d5fa; }
+  .alert.warn  { background: var(--warn-soft);  border-color: var(--warn);  color: #fbe4a9; }
+  .alert.info  { background: var(--accent-soft); border-color: var(--accent); color: #c2d5fa; }
 
-  .summary-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-top: 8px;
-  }
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 8px; }
   .summary-stat {
-    background: var(--bg-panel-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
+    background: var(--bg-panel-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px;
   }
   .summary-stat .label {
-    font-size: 11px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
+    font-size: 11px; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
   }
-  .summary-stat .value {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text);
-  }
+  .summary-stat .value { font-size: 18px; font-weight: 600; }
 
   details {
-    background: var(--bg-panel-2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-top: 14px;
+    background: var(--bg-panel-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; margin-top: 14px;
   }
-  details summary {
-    cursor: pointer;
-    color: var(--text-muted);
-    font-size: 13px;
-  }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 13px; }
   details pre {
-    margin-top: 10px;
-    font-size: 11px;
-    color: var(--text-muted);
-    max-height: 300px;
-    overflow: auto;
-    background: var(--bg);
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
+    margin-top: 10px; font-size: 11px; color: var(--text-muted);
+    max-height: 300px; overflow: auto; background: var(--bg);
+    padding: 10px; border-radius: 6px; border: 1px solid var(--border);
   }
 
   @media (max-width: 720px) {
-    .grid-2, .downloads, .summary-grid { grid-template-columns: 1fr; }
+    .grid-2, .downloads, .summary-grid, .estimate-card, .drive-bar {
+      grid-template-columns: 1fr;
+    }
+    .drive-bar { flex-direction: column; }
     .app { padding: 16px; }
   }
 </style>
@@ -408,49 +317,74 @@
 const { useState, useRef, useEffect, useCallback, useMemo } = React;
 
 /* ============================================================================
-   Tasklet bridge — calls the backend pipeline.
+   Bridge — tolerates Tasklet-injected host methods and falls back to HTTP.
 
-   Tries multiple transports in order, so this app works whether Tasklet
-   injects a host bridge (window.tasklet) or serves the companion Python
-   server on the same origin.
-
-   Expected backend response:
-     { ok: true, files: [{name, size_bytes, data_base64}], analysis, timing,
-       usage, model, ingest_summaries }
-   or
-     { ok: false, error: "...", traceback: "..." }
+   We distinguish three operations:
+     scanDrive(payload)    — return JSON tree of Drive folder
+     runProcess(payload,   — POST /api/process → NDJSON stream of events.
+                onEvent)     Each event is a small JSON object; the final
+                             one is {type:"complete", result:...}.
 ============================================================================ */
-async function callBackend(payload) {
-  // 1) Tasklet-injected host bridge (preferred when running inside Tasklet).
-  const t = (typeof window !== "undefined" && window.tasklet) || null;
-  if (t) {
-    if (typeof t.runBackend === "function") {
-      return await t.runBackend("process_bid", payload);
-    }
-    if (typeof t.runScript === "function") {
-      return await t.runScript("backend/process_bid.py", payload);
-    }
-    if (typeof t.call === "function") {
-      return await t.call("process_bid", payload);
-    }
-    if (typeof t.exec === "function") {
-      return await t.exec({ script: "backend/process_bid.py", payload });
-    }
-  }
 
-  // 2) HTTP fallback — companion Python server on the same origin.
-  const resp = await fetch("/api/process", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  const text = await resp.text();
-  let json;
-  try { json = JSON.parse(text); }
-  catch { throw new Error(`Backend returned non-JSON (${resp.status}): ${text.slice(0, 300)}`); }
-  if (!resp.ok && json.ok !== false) json.ok = false;
-  return json;
-}
+const BRIDGE = (() => {
+  const t = (typeof window !== "undefined" && window.tasklet) || null;
+  return {
+    mode: t ? "tasklet" : "http",
+    async scanDrive(payload) {
+      if (t?.scanDrive) return await t.scanDrive(payload);
+      if (t?.call)      return await t.call("drive_scan", payload);
+      const r = await fetch("/api/drive/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const text = await r.text();
+      let json;
+      try { json = JSON.parse(text); }
+      catch { throw new Error(`scan returned non-JSON (${r.status}): ${text.slice(0,200)}`); }
+      if (!r.ok && json.ok !== false) json.ok = false;
+      return json;
+    },
+    async runProcess(payload, onEvent) {
+      // Tasklet streaming hooks (speculative) — if none available, use fetch + NDJSON.
+      if (t?.runProcessStreaming) return await t.runProcessStreaming(payload, onEvent);
+
+      const r = await fetch("/api/process", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok && r.headers.get("content-type")?.includes("json")) {
+        const errJson = await r.json();
+        throw new Error(errJson.error || `process failed with HTTP ${r.status}`);
+      }
+      if (!r.body) throw new Error("Streaming not supported in this browser.");
+
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let finalResult = null;
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf("\n")) >= 0) {
+          const line = buffer.slice(0, idx).trim();
+          buffer = buffer.slice(idx + 1);
+          if (!line) continue;
+          let evt;
+          try { evt = JSON.parse(line); } catch { continue; }
+          onEvent?.(evt);
+          if (evt.type === "complete") finalResult = evt.result;
+          if (evt.type === "error") throw new Error(evt.error || "backend error");
+        }
+      }
+      if (!finalResult) throw new Error("process stream ended without a 'complete' event.");
+      return finalResult;
+    },
+  };
+})();
 
 /* ============================================================================
    Utilities
@@ -472,7 +406,20 @@ function formatBytes(n) {
   if (!n || n < 0) return "0 B";
   if (n < 1024) return n + " B";
   if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
-  return (n / 1024 / 1024).toFixed(1) + " MB";
+  if (n < 1024 * 1024 * 1024) return (n / 1024 / 1024).toFixed(1) + " MB";
+  return (n / 1024 / 1024 / 1024).toFixed(2) + " GB";
+}
+
+function formatTokens(n) {
+  if (!n || n < 0) return "0";
+  if (n < 1000) return String(n);
+  if (n < 1_000_000) return (n / 1000).toFixed(0) + "K";
+  return (n / 1_000_000).toFixed(2) + "M";
+}
+
+function formatUSD(n) {
+  if (!n && n !== 0) return "—";
+  return "$" + Number(n).toFixed(2);
 }
 
 function base64ToBlob(b64, mime) {
@@ -481,30 +428,25 @@ function base64ToBlob(b64, mime) {
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
   return new Blob([bytes], { type: mime });
 }
-
 function mimeFor(name) {
   const lower = name.toLowerCase();
   if (lower.endsWith(".xlsx")) return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
   if (lower.endsWith(".docx")) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
   return "application/octet-stream";
 }
-
 function downloadBase64(name, b64) {
   const blob = base64ToBlob(b64, mimeFor(name));
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
 const FILE_DESCRIPTIONS = {
-  "01_Takeoff.xlsx":      "UMA-formatted quantity takeoff spreadsheet",
-  "02_Project_Info.docx": "Scope summary, testing, design, risks, equipment, vendors",
-  "03_Vendor_RFQs.docx":  "Vendor request-for-quotes, one section per category",
+  "01_Takeoff.xlsx":       "UMA-formatted quantity takeoff spreadsheet",
+  "02_Project_Info.docx":  "Scope summary, testing, design, risks, equipment, vendors",
+  "03_Vendor_RFQs.docx":   "Vendor request-for-quotes, one section per category",
   "04_Cost_Proposal.docx": "First-draft cost proposal with inclusions & exclusions",
 };
 
@@ -512,37 +454,76 @@ const FILE_DESCRIPTIONS = {
    App
 ============================================================================ */
 function App() {
-  // Project metadata
   const today = new Date();
   const defaultDue = new Date(today.getTime() + 7 * 86400000).toISOString().slice(0, 10);
+
   const [meta, setMeta] = useState({
-    name: "",
-    location: "",
-    client: "",
-    bid_due_date: defaultDue,
-    scope_hint: "",
-    notes: "",
+    name: "", location: "", client: "",
+    bid_due_date: defaultDue, scope_hint: "", notes: "",
   });
   const [manualNotes, setManualNotes] = useState("");
 
-  // Files
-  const [files, setFiles] = useState([]);     // {id, file, name, size}
+  // Input mode: direct drag-drop (small jobs) or Drive folder (bid packages).
+  const [mode, setMode] = useState("drive");
+
+  // Direct upload
+  const [files, setFiles] = useState([]);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Processing state
+  // Drive scan
+  const [driveFolder, setDriveFolder] = useState("");
+  const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState(null);
+  const [scanResult, setScanResult] = useState(null); // {folder_name, files, counts, ...}
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
+
+  // Processing
   const [running, setRunning] = useState(false);
-  const [step, setStep] = useState(null);     // 'encode' | 'send' | 'analyze' | 'generate' | 'done'
   const [error, setError] = useState(null);
+  const [events, setEvents] = useState([]);   // {ts, text, err}
+  const [progress, setProgress] = useState(null); // {stage, fileIdx, fileTotal, batch, batchTotal, filename}
   const [result, setResult] = useState(null);
 
-  // Backend detection (for the status pill)
-  const backendMode = useMemo(() => {
-    const t = (typeof window !== "undefined" && window.tasklet) || null;
-    if (t && (t.runBackend || t.runScript || t.call || t.exec)) return "tasklet";
-    return "http";
-  }, []);
+  // Derived: total size/tokens/cost of the current selection
+  const selectionSummary = useMemo(() => {
+    if (!scanResult) return { count: 0, bytes: 0, tokens: 0 };
+    let count = 0, bytes = 0, tokens = 0;
+    for (const f of scanResult.files) {
+      if (selectedIds.has(f.id)) {
+        count++; bytes += f.size_bytes || 0; tokens += f.est_tokens || 0;
+      }
+    }
+    return { count, bytes, tokens };
+  }, [scanResult, selectedIds]);
 
+  const costPreview = useMemo(() => {
+    const t = selectionSummary.tokens;
+    const outputEst = Math.max(3000, 3000 * (Math.ceil(selectionSummary.count / 25) || 1));
+    const inputCost = (t / 1_000_000) * 3.0;
+    const outputCost = (outputEst / 1_000_000) * 15.0;
+    return {
+      inputTokens: t,
+      outputTokens: outputEst,
+      total: inputCost + outputCost,
+    };
+  }, [selectionSummary]);
+
+  const overBudget = costPreview.total > 5;
+
+  // Group scanned files by folder path for display
+  const fileGroups = useMemo(() => {
+    if (!scanResult) return [];
+    const map = new Map();
+    for (const f of scanResult.files) {
+      const key = f.path || "(root)";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(f);
+    }
+    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [scanResult]);
+
+  // --- input handlers ----------------------------------------------------
   const setField = useCallback((k, v) => setMeta((m) => ({ ...m, [k]: v })), []);
 
   const addFiles = useCallback((list) => {
@@ -552,120 +533,205 @@ function App() {
       for (const f of incoming) {
         next.push({
           id: crypto.randomUUID ? crypto.randomUUID() : String(Math.random()),
-          file: f,
-          name: f.name,
-          size: f.size,
+          file: f, name: f.name, size: f.size,
         });
       }
       return next;
     });
   }, []);
-
-  const removeFile = useCallback((id) => {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
-  }, []);
-
+  const removeFile = useCallback((id) => setFiles((p) => p.filter((f) => f.id !== id)), []);
   const onDrop = useCallback((e) => {
-    e.preventDefault();
-    setDragActive(false);
+    e.preventDefault(); setDragActive(false);
     if (e.dataTransfer?.files?.length) addFiles(e.dataTransfer.files);
   }, [addFiles]);
+  const onDragOver = useCallback((e) => { e.preventDefault(); setDragActive(true); }, []);
+  const onDragLeave = useCallback((e) => { e.preventDefault(); setDragActive(false); }, []);
 
-  const onDragOver = useCallback((e) => {
-    e.preventDefault();
-    setDragActive(true);
+  // --- Drive scan --------------------------------------------------------
+  const doScan = useCallback(async () => {
+    setScanning(true); setScanError(null); setScanResult(null);
+    setSelectedIds(new Set());
+    try {
+      const res = await BRIDGE.scanDrive({
+        drive_folder: driveFolder.trim(),
+        drive_recursive: true,
+      });
+      if (!res || res.ok === false) {
+        throw new Error(res?.error || "scan failed");
+      }
+      setScanResult(res);
+      // Default: select all supported files
+      const defaults = new Set(res.files.filter((f) => f.kind === "supported").map((f) => f.id));
+      setSelectedIds(defaults);
+    } catch (e) {
+      setScanError(e.message || String(e));
+    } finally {
+      setScanning(false);
+    }
+  }, [driveFolder]);
+
+  const toggle = useCallback((id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
+  const selectAllSupported = useCallback(() => {
+    if (!scanResult) return;
+    setSelectedIds(new Set(scanResult.files.filter((f) => f.kind === "supported").map((f) => f.id)));
+  }, [scanResult]);
+  const selectAll = useCallback(() => {
+    if (!scanResult) return;
+    setSelectedIds(new Set(scanResult.files.filter((f) => f.kind !== "skipped").map((f) => f.id)));
+  }, [scanResult]);
+  const deselectAll = useCallback(() => setSelectedIds(new Set()), []);
+
+  const pushEvent = useCallback((text, err = false) => {
+    setEvents((prev) => [...prev.slice(-200), { ts: Date.now(), text, err }]);
   }, []);
 
-  const onDragLeave = useCallback((e) => {
-    e.preventDefault();
-    setDragActive(false);
-  }, []);
-
-  const canSubmit = !running && (
-    files.length > 0 ||
-    manualNotes.trim().length > 0 ||
-    meta.notes.trim().length > 0
+  // --- submit ------------------------------------------------------------
+  const canSubmit = !running && !scanning && (
+    (mode === "upload" && (files.length > 0 || manualNotes.trim() || meta.notes.trim())) ||
+    (mode === "drive"  && scanResult && selectedIds.size > 0)
   );
 
   const submit = useCallback(async () => {
-    setError(null);
-    setResult(null);
+    setError(null); setResult(null); setEvents([]); setProgress(null);
+    if (overBudget && mode === "drive") {
+      const ok = window.confirm(
+        `Estimated cost ~${formatUSD(costPreview.total)} exceeds the $5 warning. Proceed?`
+      );
+      if (!ok) return;
+    }
+
     setRunning(true);
     try {
-      setStep("encode");
-      const encoded = [];
-      for (const f of files) {
-        const data_base64 = await fileToBase64(f.file);
-        encoded.push({ name: f.name, data_base64 });
-      }
-
-      setStep("send");
       const payload = {
         meta: {
-          name: meta.name,
-          location: meta.location,
-          client: meta.client,
-          bid_due_date: meta.bid_due_date,
-          scope_hint: meta.scope_hint,
-          notes: meta.notes,
+          name: meta.name, location: meta.location, client: meta.client,
+          bid_due_date: meta.bid_due_date, scope_hint: meta.scope_hint, notes: meta.notes,
         },
         manual_notes: manualNotes,
-        files: encoded,
+        files: [],
+        drive_selection: [],
+        override_caps: true, // user confirmed via the cost dialog; backend will still enforce per-file cap
       };
 
-      setStep("analyze");
-      const res = await callBackend(payload);
-      if (!res || res.ok === false) {
-        throw new Error(res?.error || "Backend returned an error.");
+      if (mode === "upload") {
+        for (const f of files) {
+          pushEvent(`Reading ${f.name}…`);
+          const b64 = await fileToBase64(f.file);
+          payload.files.push({ name: f.name, data_base64: b64 });
+        }
+      } else {
+        payload.drive_folder = driveFolder.trim();
+        payload.drive_selection = scanResult.files.filter((f) => selectedIds.has(f.id));
       }
-      setStep("generate");
-      // brief delay for the UI to breathe after the request returns
-      await new Promise((r) => setTimeout(r, 150));
-      setStep("done");
-      setResult(res);
+
+      await BRIDGE.runProcess(payload, (evt) => {
+        switch (evt.type) {
+          case "start":
+            pushEvent("Backend started."); break;
+          case "cap_enforced":
+            if (evt.rejected?.length) {
+              pushEvent(`Skipped ${evt.rejected.length} files due to caps`, true);
+            }
+            break;
+          case "file_start":
+            setProgress({
+              stage: "stream", fileIdx: evt.index, fileTotal: evt.total,
+              filename: evt.name, sizeBytes: evt.size_bytes,
+            });
+            pushEvent(`→ ${evt.index}/${evt.total}  ${evt.name}  (${formatBytes(evt.size_bytes)})`);
+            break;
+          case "file_done":
+            pushEvent(`   ${evt.summary}`);
+            break;
+          case "file_error":
+            pushEvent(`   ! error on ${evt.name}: ${evt.error}`, true);
+            break;
+          case "ingest_done":
+            pushEvent(`Ingest complete — ${evt.ingested_count} files, ~${formatTokens(evt.est_input_tokens)} tokens`);
+            setProgress({ stage: "claude_pre" });
+            break;
+          case "claude_start":
+            setProgress({ stage: "claude", batch: 0, batchTotal: null });
+            break;
+          case "claude_batch_done":
+            setProgress({ stage: "claude", batch: evt.batch, batchTotal: evt.total_batches });
+            pushEvent(`Claude batch ${evt.batch}/${evt.total_batches} done`);
+            break;
+          case "claude_done":
+            pushEvent(`Claude: ${evt.usage?.input_tokens || 0} in / ${evt.usage?.output_tokens || 0} out tokens`);
+            setProgress({ stage: "outputs" });
+            break;
+          case "outputs_start":
+            pushEvent("Generating deliverables…"); break;
+          case "outputs_done":
+            pushEvent("Deliverables ready."); break;
+          case "complete":
+            setResult(evt.result); setProgress({ stage: "done" }); break;
+          case "error":
+            pushEvent(`ERROR: ${evt.error}`, true); break;
+        }
+      });
     } catch (e) {
-      setError(e?.message || String(e));
-      setStep(null);
+      setError(e.message || String(e));
     } finally {
       setRunning(false);
     }
-  }, [files, manualNotes, meta]);
+  }, [mode, meta, manualNotes, files, scanResult, selectedIds, driveFolder, overBudget, costPreview, pushEvent]);
 
   const reset = useCallback(() => {
-    setResult(null);
-    setError(null);
-    setStep(null);
-    setFiles([]);
+    setResult(null); setError(null); setProgress(null); setEvents([]);
   }, []);
 
-  // ----- Render helpers --------------------------------------------------
+  // ----- render helpers --------------------------------------------------
   const renderProgress = () => {
     if (!running && !result && !error) return null;
-    const steps = [
-      { id: "encode",   label: "Reading files" },
-      { id: "send",     label: "Uploading to backend" },
-      { id: "analyze",  label: "Claude is analyzing the bid package" },
-      { id: "generate", label: "Generating deliverables" },
-    ];
-    const currentIdx = steps.findIndex((s) => s.id === step);
+    const fileIdx = progress?.fileIdx || 0;
+    const fileTotal = progress?.fileTotal || (mode === "drive" ? selectedIds.size : files.length);
+    const pct = fileTotal > 0 ? Math.round((fileIdx / fileTotal) * 100) : 0;
     return (
-      <div className="progress">
-        {steps.map((s, i) => {
-          let cls = "step";
-          let ico = "○";
-          const isDone = result ? true : (currentIdx > i);
-          const isActive = running && currentIdx === i;
-          if (isActive) { cls += " active"; ico = null; }
-          if (isDone) { cls += " done"; ico = "✓"; }
-          return (
-            <div className={cls} key={s.id}>
-              <span className="ico">
-                {isActive ? <span className="spinner" /> : ico}
-              </span>
-              <span>{s.label}</span>
+      <div>
+        {progress?.stage === "stream" && fileTotal > 0 && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--text-muted)" }}>
+              <span>Streaming {fileIdx} of {fileTotal}: {progress.filename}</span>
+              <span>{pct}%</span>
             </div>
-          );
-        })}
+            <div className="progress-bar"><div className="fill" style={{ width: pct + "%" }} /></div>
+          </div>
+        )}
+        {progress?.stage === "claude" && (
+          <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 8 }}>
+            <span className="spinner" style={{ marginRight: 8 }} />
+            Claude analyzing
+            {progress.batchTotal && progress.batchTotal > 1
+              ? ` — batch ${Math.max(progress.batch, 1)} of ${progress.batchTotal}` : "…"}
+          </div>
+        )}
+        {progress?.stage === "claude_pre" && (
+          <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 8 }}>
+            <span className="spinner" style={{ marginRight: 8 }} />
+            Preparing Claude request…
+          </div>
+        )}
+        {progress?.stage === "outputs" && (
+          <div style={{ fontSize: 13, color: "var(--text-muted)", marginTop: 8 }}>
+            <span className="spinner" style={{ marginRight: 8 }} />
+            Generating deliverables…
+          </div>
+        )}
+        {events.length > 0 && (
+          <div className="live-log">
+            {events.map((e, i) => (
+              <div className={`line ${e.err ? "err" : ""}`} key={i}>{e.text}</div>
+            ))}
+          </div>
+        )}
       </div>
     );
   };
@@ -676,6 +742,7 @@ function App() {
     const analysis = result.analysis || {};
     const project = analysis.project || {};
     const usage = result.usage || {};
+    const cost = result.cost || {};
     const timing = result.timing || {};
     const takeoff = analysis.takeoff_items || [];
     const testing = analysis.testing_requirements || [];
@@ -686,27 +753,21 @@ function App() {
           <h2>Results</h2>
           <div className="subtitle">
             {project.name || "Analysis complete"} ·&nbsp;
-            {project.location || "—"} ·&nbsp;
-            Scope: {project.scope_type || "—"}
+            {project.location || "—"} · Scope: {project.scope_type || "—"} ·&nbsp;
+            {result.batches && result.batches > 1 ? `${result.batches} batches` : "1 pass"}
           </div>
           <div className="summary-grid">
             <div className="summary-stat">
-              <div className="label">Takeoff items</div>
-              <div className="value">{takeoff.length}</div>
+              <div className="label">Takeoff items</div><div className="value">{takeoff.length}</div>
             </div>
             <div className="summary-stat">
-              <div className="label">Testing items</div>
-              <div className="value">{testing.length}</div>
+              <div className="label">Testing items</div><div className="value">{testing.length}</div>
             </div>
             <div className="summary-stat">
-              <div className="label">Vendor categories</div>
-              <div className="value">{vendors.length}</div>
+              <div className="label">Vendor categories</div><div className="value">{vendors.length}</div>
             </div>
             <div className="summary-stat">
-              <div className="label">Tokens in / out</div>
-              <div className="value" style={{ fontSize: 13 }}>
-                {usage.input_tokens || 0} / {usage.output_tokens || 0}
-              </div>
+              <div className="label">Cost</div><div className="value">{formatUSD(cost.total_cost_usd)}</div>
             </div>
           </div>
         </div>
@@ -714,7 +775,8 @@ function App() {
         <div className="panel">
           <h2>Download deliverables</h2>
           <div className="subtitle">
-            4 files · Analysis done in {timing.claude_sec?.toFixed?.(1) ?? "?"}s · Total {timing.total_sec?.toFixed?.(1) ?? "?"}s
+            4 files · Claude {timing.claude_sec?.toFixed?.(1) ?? "?"}s · Total {timing.total_sec?.toFixed?.(1) ?? "?"}s ·
+            &nbsp;{formatTokens(usage.input_tokens)} in / {formatTokens(usage.output_tokens)} out
           </div>
           <div className="downloads">
             {files.map((f) => (
@@ -724,10 +786,7 @@ function App() {
                   <div className="desc">{FILE_DESCRIPTIONS[f.name] || ""}</div>
                   <div className="size">{formatBytes(f.size_bytes)}</div>
                 </div>
-                <button
-                  className="download-btn"
-                  onClick={() => downloadBase64(f.name, f.data_base64)}
-                >
+                <button className="download-btn" onClick={() => downloadBase64(f.name, f.data_base64)}>
                   Download
                 </button>
               </div>
@@ -746,7 +805,80 @@ function App() {
     );
   };
 
-  // ----- Main render -----------------------------------------------------
+  const renderDriveTree = () => {
+    if (!scanResult) return null;
+    const c = scanResult.counts;
+    return (
+      <>
+        <div className="scan-meta">
+          <strong>{scanResult.folder_name || scanResult.folder_id}</strong> · {c.total} items ·&nbsp;
+          <span style={{ color: "var(--success)" }}>{c.supported} supported</span>
+          {c.cad > 0      && <>, <span style={{ color: "var(--warn)" }}>{c.cad} CAD</span></>}
+          {c.media > 0    && <>, {c.media} media</>}
+          {c.archive > 0  && <>, {c.archive} archive</>}
+          {c.skipped > 0  && <>, <span style={{ color: "var(--error)" }}>{c.skipped} unsupported</span></>}
+          &nbsp;· {formatBytes(scanResult.total_size_bytes)}
+        </div>
+
+        <div className="estimate-card">
+          <div className="estimate-stat">
+            <div className="label">Selected</div>
+            <div className="value">{selectionSummary.count} files</div>
+          </div>
+          <div className="estimate-stat">
+            <div className="label">Size</div>
+            <div className="value">{formatBytes(selectionSummary.bytes)}</div>
+          </div>
+          <div className="estimate-stat">
+            <div className="label">Est. tokens in</div>
+            <div className="value">{formatTokens(selectionSummary.tokens)}</div>
+          </div>
+          <div className={"estimate-stat" + (overBudget ? " warn" : "")}>
+            <div className="label">Est. cost</div>
+            <div className="value">{formatUSD(costPreview.total)}</div>
+          </div>
+        </div>
+
+        {overBudget && (
+          <div className="alert warn" style={{ marginTop: 12 }}>
+            Estimated cost exceeds $5. You'll be asked to confirm before processing starts.
+          </div>
+        )}
+
+        <div className="file-tree">
+          <div className="tree-toolbar">
+            <span>{selectionSummary.count} / {c.total} selected</span>
+            <div className="actions-inline">
+              <button className="btn ghost sm" onClick={selectAllSupported}>Supported only</button>
+              <button className="btn ghost sm" onClick={selectAll}>All non-skipped</button>
+              <button className="btn ghost sm" onClick={deselectAll}>None</button>
+            </div>
+          </div>
+          {fileGroups.map(([folder, entries]) => (
+            <div key={folder}>
+              <div className="tree-folder">{folder}</div>
+              {entries.map((f) => {
+                const disabled = f.kind === "skipped";
+                return (
+                  <label className="tree-file" key={f.id} style={{ opacity: disabled ? 0.55 : 1 }}>
+                    <input
+                      type="checkbox" checked={selectedIds.has(f.id)}
+                      onChange={() => toggle(f.id)} disabled={disabled}
+                    />
+                    <span className={`kind-tag kind-${f.kind}`}>{f.kind}</span>
+                    <span className="tree-name" title={f.mime_type}>{f.name}</span>
+                    <span className="tree-size">{formatBytes(f.size_bytes)}</span>
+                  </label>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  };
+
+  // ----- main render -----------------------------------------------------
   return (
     <div className="app">
       <div className="header">
@@ -757,9 +889,9 @@ function App() {
             <p>AI-assisted bid-package analyzer · geotechnical scopes</p>
           </div>
         </div>
-        <div className={`status-pill ${backendMode === "tasklet" ? "ok" : ""}`}>
+        <div className={`status-pill ${BRIDGE.mode === "tasklet" ? "ok" : ""}`}>
           <span className="dot" />
-          {backendMode === "tasklet" ? "Tasklet bridge connected" : "HTTP backend"}
+          {BRIDGE.mode === "tasklet" ? "Tasklet bridge connected" : "HTTP backend"}
         </div>
       </div>
 
@@ -773,139 +905,125 @@ function App() {
         <>
           <div className="panel">
             <h2>1. Project details</h2>
-            <div className="subtitle">Project metadata Claude will use to contextualize the analysis.</div>
+            <div className="subtitle">Metadata Claude will use to contextualize the analysis.</div>
             <div className="grid-2">
               <div className="field">
                 <label>Project name</label>
-                <input
-                  value={meta.name}
-                  onChange={(e) => setField("name", e.target.value)}
-                  placeholder="e.g., Back Bay Micropile Underpinning"
-                />
+                <input value={meta.name} onChange={(e) => setField("name", e.target.value)}
+                  placeholder="e.g., Back Bay Micropile Underpinning" />
               </div>
               <div className="field">
                 <label>Location (city, state)</label>
-                <input
-                  value={meta.location}
-                  onChange={(e) => setField("location", e.target.value)}
-                  placeholder="Boston, MA"
-                />
+                <input value={meta.location} onChange={(e) => setField("location", e.target.value)}
+                  placeholder="Boston, MA" />
               </div>
               <div className="field">
                 <label>Client / GC</label>
-                <input
-                  value={meta.client}
-                  onChange={(e) => setField("client", e.target.value)}
-                  placeholder="Turner, Suffolk, Shawmut…"
-                />
+                <input value={meta.client} onChange={(e) => setField("client", e.target.value)}
+                  placeholder="Turner, Suffolk, Shawmut…" />
               </div>
               <div className="field">
                 <label>Bid due date</label>
-                <input
-                  type="date"
-                  value={meta.bid_due_date}
-                  onChange={(e) => setField("bid_due_date", e.target.value)}
-                />
+                <input type="date" value={meta.bid_due_date}
+                  onChange={(e) => setField("bid_due_date", e.target.value)} />
               </div>
               <div className="field">
                 <label>Expected scope (optional)</label>
-                <select
-                  value={meta.scope_hint}
-                  onChange={(e) => setField("scope_hint", e.target.value)}
-                >
+                <select value={meta.scope_hint} onChange={(e) => setField("scope_hint", e.target.value)}>
                   <option value="">Let Claude detect</option>
-                  <option>Micropile</option>
-                  <option>Soil Nail</option>
-                  <option>HDPR</option>
-                  <option>Pre-drilling</option>
-                  <option>Shotcrete</option>
-                  <option>Soldier Pile</option>
-                  <option>Mixed</option>
-                  <option>Other</option>
+                  <option>Micropile</option><option>Soil Nail</option>
+                  <option>HDPR</option><option>Pre-drilling</option>
+                  <option>Shotcrete</option><option>Soldier Pile</option>
+                  <option>Mixed</option><option>Other</option>
                 </select>
               </div>
               <div className="field">
                 <label>Notes / assumptions / exclusions</label>
-                <textarea
-                  rows={3}
-                  value={meta.notes}
+                <textarea rows={3} value={meta.notes}
                   onChange={(e) => setField("notes", e.target.value)}
-                  placeholder="Anything you want Claude to factor in that isn't in the files."
-                />
+                  placeholder="Anything you want Claude to factor in that isn't in the files." />
               </div>
             </div>
           </div>
 
           <div className="panel">
-            <h2>2. Drop bid-package files</h2>
+            <h2>2. Source files</h2>
             <div className="subtitle">
-              PDFs, drawings, specs, geotech reports, Excel, Word, photos. Up to ~50 MB per file.
+              For real bid packages (5-10 GB), use Google Drive — files stream through the backend.
+              For quick jobs with a handful of small files, use direct upload.
             </div>
-            <div
-              className={`dropzone ${dragActive ? "drag" : ""}`}
-              onClick={() => fileInputRef.current?.click()}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              onDragLeave={onDragLeave}
-            >
-              <div className="big">Drop files here or click to browse</div>
-              <div className="small">
-                {files.length === 0
-                  ? "PDF · DOCX · XLSX · CSV · PNG/JPG · TXT"
-                  : `${files.length} file(s) selected · ${formatBytes(files.reduce((s, f) => s + f.size, 0))}`}
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                style={{ display: "none" }}
-                onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }}
-              />
+
+            <div className="tabs">
+              <button className={`tab ${mode === "drive" ? "active" : ""}`} onClick={() => setMode("drive")}>
+                Google Drive folder
+              </button>
+              <button className={`tab ${mode === "upload" ? "active" : ""}`} onClick={() => setMode("upload")}>
+                Direct upload
+              </button>
             </div>
-            {files.length > 0 && (
-              <div className="files-list">
-                {files.map((f) => (
-                  <div className="file-row" key={f.id}>
-                    <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {f.name}
-                    </span>
-                    <span className="meta">{formatBytes(f.size)}</span>
-                    <button onClick={() => removeFile(f.id)} aria-label="remove">✕</button>
+
+            {mode === "drive" ? (
+              <>
+                <div className="drive-bar">
+                  <input type="text" placeholder="Paste Drive folder URL or ID (e.g., https://drive.google.com/drive/folders/…)"
+                    value={driveFolder} onChange={(e) => setDriveFolder(e.target.value)} />
+                  <button className="btn secondary" onClick={doScan} disabled={!driveFolder.trim() || scanning}>
+                    {scanning ? <><span className="spinner" style={{ marginRight: 6 }} />Scanning…</> : "Scan folder"}
+                  </button>
+                </div>
+                {scanError && <div className="alert error" style={{ marginTop: 12 }}>{scanError}</div>}
+                {renderDriveTree()}
+              </>
+            ) : (
+              <>
+                <div
+                  className={`dropzone ${dragActive ? "drag" : ""}`}
+                  onClick={() => fileInputRef.current?.click()}
+                  onDrop={onDrop} onDragOver={onDragOver} onDragLeave={onDragLeave}
+                >
+                  <div className="big">Drop files here or click to browse</div>
+                  <div className="small">
+                    {files.length === 0
+                      ? "PDF · DOCX · XLSX · CSV · PNG/JPG · TXT"
+                      : `${files.length} file(s) selected · ${formatBytes(files.reduce((s, f) => s + f.size, 0))}`}
                   </div>
-                ))}
-              </div>
+                  <input ref={fileInputRef} type="file" multiple style={{ display: "none" }}
+                    onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} />
+                </div>
+                {files.length > 0 && (
+                  <div className="files-list">
+                    {files.map((f) => (
+                      <div className="file-row" key={f.id}>
+                        <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {f.name}
+                        </span>
+                        <span className="meta">{formatBytes(f.size)}</span>
+                        <button onClick={() => removeFile(f.id)} aria-label="remove">✕</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
 
           <div className="panel">
             <h2>3. Manual entries (items not in the files)</h2>
             <div className="subtitle">Quantities, rates, verbal confirmations — anything useful.</div>
-            <textarea
-              rows={5}
-              value={manualNotes}
-              onChange={(e) => setManualNotes(e.target.value)}
+            <textarea rows={5} value={manualNotes} onChange={(e) => setManualNotes(e.target.value)}
               placeholder={"e.g., Client verbally confirmed 42 piles at 80ft each\nor: Use $48/LF baseline for 9-5/8\" casing based on last Enbridge quote"}
               style={{
-                width: "100%",
-                background: "var(--bg-panel-2)",
-                color: "var(--text)",
-                border: "1px solid var(--border)",
-                borderRadius: 8,
-                padding: 12,
-                fontFamily: "inherit",
-                fontSize: 14,
-              }}
-            />
+                width: "100%", background: "var(--bg-panel-2)", color: "var(--text)",
+                border: "1px solid var(--border)", borderRadius: 8, padding: 12,
+                fontFamily: "inherit", fontSize: 14,
+              }} />
             <div className="actions">
               <div style={{ color: "var(--text-muted)", fontSize: 12 }}>
-                {!canSubmit && !running && "Upload at least one file or add notes to begin."}
+                {!canSubmit && !running &&
+                  (mode === "drive" ? "Scan a Drive folder and select files to begin." : "Upload at least one file or add notes to begin.")}
               </div>
-              <button
-                className="btn"
-                onClick={submit}
-                disabled={!canSubmit}
-              >
-                {running ? "Analyzing…" : "Analyze & generate →"}
+              <button className="btn" onClick={submit} disabled={!canSubmit}>
+                {running ? "Processing…" : "Analyze & generate →"}
               </button>
             </div>
             {renderProgress()}
