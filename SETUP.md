@@ -154,6 +154,41 @@ subfolder inherits access.
 
 ---
 
+## Part D — Smart Vision for plan sheets (optional but recommended)
+
+The app has a vision preprocessor for construction plan PDFs. When you
+upload a drawing it:
+
+1. Extracts dimension lines, symbols, and scale directly from the PDF's
+   vector data (free, deterministic — no Claude call).
+2. Rasterizes each page at 150 DPI and splits it into 5 overlapping regions.
+3. Sends each region to Claude with a sheet-type-specific prompt in parallel.
+4. Merges results and passes the structured data to the main analysis as
+   ground-truth context.
+
+Nothing to configure per-project. The rasterization step uses poppler when
+available and falls back to `pdfplumber.page.to_image()` (which ships with
+the `pdfplumber` dep) otherwise, so this still works without system
+packages — just with slightly lower rendering quality.
+
+### Install poppler (faster, higher quality)
+
+macOS: `brew install poppler`
+Ubuntu / Debian: `sudo apt-get install poppler-utils`
+
+### Streamlit Cloud
+
+The repo has a `packages.txt` at the root listing `poppler-utils`; Streamlit
+Cloud auto-installs it on each deploy. No manual step needed.
+
+### Tasklet
+
+If the Tasklet sandbox doesn't already have `pdftoppm` on the PATH, the
+fallback path will be used automatically. To force the high-quality path,
+add `poppler-utils` to the Tasklet sandbox config.
+
+---
+
 ## Troubleshooting
 
 **"No Google Drive credentials available"** — the service account JSON isn't

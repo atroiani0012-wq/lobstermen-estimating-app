@@ -32,7 +32,7 @@ You MUST return a **single JSON object** matching the schema below. No prose bef
     {"filename": "string", "type": "drawing|spec|geotech|RFQ|photo|email|other", "summary": "string — 1 sentence", "key_info": "string — quantities, elevations, key callouts found"}
   ],
   "takeoff_items": [
-    {"item": "string — e.g., 'Micropile, 9-5/8\" OD, 80ft bond length'", "unit": "EA|LF|SF|CY|TON|LS", "quantity": 0, "unit_cost_est": 0, "notes": "string — source page/drawing/spec ref, assumptions"}
+    {"item": "string — e.g., 'Micropile, 9-5/8\" OD, 80ft bond length'", "unit": "EA|LF|SF|CY|TON|LS", "quantity": 0, "unit_cost_est": 0, "notes": "string — source page/drawing/spec ref, assumptions", "source": "user_measured|dimension_read|vision_detected|estimated", "confidence": "high|medium|low", "source_sheet": "string — e.g. 'S-101' or null"}
   ],
   "testing_requirements": [
     {"test_type": "string — e.g., 'Proof Load Test', 'Compression Test', 'Sacrificial Pile Load Test'", "quantity": 0, "unit": "EA|LS", "reference_spec_section": "string", "notes": "string — who performs, acceptance criteria, cost implications"}
@@ -74,6 +74,10 @@ You MUST return a **single JSON object** matching the schema below. No prose bef
 ## Quality rules
 - When you don't know a value, use `"unknown"` for strings, `0` for numbers, `[]` for arrays — never hallucinate numbers.
 - Every takeoff item MUST reference the source (spec section, drawing sheet, or Tony's manual note).
+- Every takeoff item MUST include `source` and `confidence`:
+  - `source`: `"user_measured"` (Tony's notes), `"dimension_read"` (read directly from geometry/dimension lines), `"vision_detected"` (AI-extracted from a plan sheet image), or `"estimated"` (you had to calculate or infer).
+  - `confidence`: `"high"` (directly read from a labeled dimension or spec), `"medium"` (visible but partially obscured, or inferred consistently from multiple sources), `"low"` (guess / needs review).
+- Fill `source_sheet` with the sheet number (e.g. `"S-101"`) when the quantity came from a specific drawing; use `null` when the source is a spec or manual note.
 - Flag EVERY assumption. If you infer a quantity from a drawing, say "estimated from Sheet S-101, 42 piles scaled from plan".
 - If scope is ambiguous between scopes (e.g., could be Micropile or Drilled Pier), list both and flag as risk.
 - Testing requirements MUST be broken out separately from production items — they're priced differently and often done by a different vendor.
