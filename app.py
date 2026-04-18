@@ -540,7 +540,198 @@ def view_results() -> None:
         st.json(analysis)
 
 
+# --- Diagnostic view (task 5) ---------------------------------------------------
+#
+# Gated on the `?diag=1` query param. Optionally protected by a shared token in
+# st.secrets["DIAG_TOKEN"] — when that secret is set, the visitor also has to
+# pass `?token=<the-token>`. No UI polish: this exists so we can run the full
+# vision + geometry + analyze pipeline end-to-end against a real PDF and look
+# at the raw output, with the Streamlit-Cloud-held ANTHROPIC_API_KEY.
+
+def view_diagnostic() -> None:
+    st.markdown("# 🧪 Diagnostic — vision + geometry end-to-end")
+    st.caption(
+        "Runs the full ingest → vision → geometry → analyze pipeline against a "
+        "single PDF, returns raw JSON + timings + any errors. No UI polish — this "
+        "is the live-run endpoint for task 5."
+    )
+
+    api_key = _get_api_key()
+    if not api_key:
+        st.error(
+            "ANTHROPIC_API_KEY is not configured on this deploy. "
+            "Set it in the app's Secrets panel and re-run."
+        )
+        return
+    st.success(f"ANTHROPIC_API_KEY present · model = {_get_model()}")
+
+    uploaded = st.file_uploader(
+        "Upload a plan-sheet PDF (or any PDF for the ingest path)",
+        type=["pdf"], accept_multiple_files=False,
+    )
+    manual_notes = st.text_area(
+        "Manual notes (optional — fed to analyze as Tony's context)",
+        value="",
+        placeholder="e.g. 'Virginia Creeper — 42 piles at 80' bond, per S-101'",
+    )
+    run_vision = st.checkbox(
+        "Run the vision pipeline (3-pass Claude per page, parallel regions).",
+        value=True,
+        help="Uncheck to skip vision and only exercise geometry + analyze. Useful "
+             "when poppler isn't installed in the deploy.",
+    )
+
+    if not uploaded:
+        st.info("Drop a PDF above to run the diagnostic.")
+        return
+    if not st.button("🚀 Run diagnostic", type="primary", use_container_width=True):
+        return
+
+    status = st.status("Running diagnostic…", expanded=True)
+    try:
+        import time as _time
+        import traceback as _traceback
+        from src import geometry as _geometry
+        from src.ingest import ingest_file as _ingest_file
+        from src.analyze import (
+            analyze_batched as _analyze_batched,
+            estimate_ingested_tokens as _estimate_ingested_tokens,
+            run_vision_pipeline as _run_vision_pipeline,
+            filter_plan_sheet_pdfs as _filter_plan_sheet_pdfs,
+        )
+
+        pdf_bytes = uploaded.getvalue()
+        fname = uploaded.name
+        t0 = _time.time()
+
+        # Phase 2 — free geometry extraction
+        status.write(f"📏 Geometry extraction on {fname}…")
+        geom_pages = _geometry.analyze_pdf_geometry(pdf_bytes)
+        t1 = _time.time()
+        status.write(
+            f"   ✅ {len(geom_pages)} page(s); "
+            f"{sum(1 for p in geom_pages if p.is_vector)} vector, "
+            f"{sum(len(p.dimension_lines) for p in geom_pages)} dimension line(s) total, "
+            f"{sum(p.symbol_clusters and len(p.symbol_clusters) or 0 for p in geom_pages)} symbol cluster(s)"
+        )
+
+        # Ingest
+        status.write(f"📥 Ingest…")
+        one = _ingest_file(fname, pdf_bytes)
+        ingested = [one]
+        status.write(f"   {one.text_summary}")
+        t2 = _time.time()
+
+        # Phase 1 — vision (guarded)
+        vision_data = None
+        if run_vision:
+            status.write("🔍 Vision pipeline (live Claude calls)…")
+            try:
+                plan_sheets = _filter_plan_sheet_pdfs([(fname, pdf_bytes)])
+                if plan_sheets:
+                    vision_data = _run_vision_pipeline(
+                        plan_sheets, api_key=api_key, model=_get_model()
+                    )
+                    page_ct = sum(len(v.get("pages") or []) for v in (vision_data or []))
+                    status.write(f"   ✅ vision extracted {page_ct} page(s) of structured data")
+                else:
+                    status.write("   ⚠️ PDF didn't pass the plan-sheet heuristic — vision skipped")
+            except Exception as e:
+                status.write(f"   ⚠️ vision failed: {e} (continuing with ingest-only path)")
+                st.exception(e)
+        t3 = _time.time()
+
+        # Analyze
+        status.write(f"📤 analyze_batched (live Claude call) on {_get_model()}…")
+        est_in = _estimate_ingested_tokens(ingested)
+        status.write(f"   est input tokens ≈ {est_in}")
+
+        def _on_batch(i, total, usage):
+            if total > 1:
+                status.write(
+                    f"   • batch {i}/{total}: "
+                    f"{(usage or {}).get('input_tokens', 0)}t in / "
+                    f"{(usage or {}).get('output_tokens', 0)}t out"
+                )
+
+        analysis = _analyze_batched(
+            meta={"name": fname, "notes": manual_notes},
+            manual_notes=manual_notes,
+            ingested=ingested,
+            api_key=api_key,
+            model=_get_model(),
+            on_batch=_on_batch,
+            vision_data=vision_data,
+        )
+        t4 = _time.time()
+
+        usage = (analysis.get("_meta") or {}).get("usage") or {"input_tokens": 0, "output_tokens": 0}
+        cost = _estimate_cost(int(usage.get("input_tokens") or 0), int(usage.get("output_tokens") or 0))
+        status.update(
+            label=f"✅ Diagnostic done in {t4 - t0:.1f}s  "
+                  f"(geom {t1-t0:.1f}s · ingest {t2-t1:.1f}s · vision {t3-t2:.1f}s · analyze {t4-t3:.1f}s · "
+                  f"~${cost['total_cost']:.2f})",
+            state="complete",
+        )
+
+        # Results
+        st.markdown("## Result")
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Takeoff items",     len(analysis.get("takeoff_items") or []))
+        c2.metric("Testing items",     len(analysis.get("testing_requirements") or []))
+        c3.metric("Vendor categories", len(analysis.get("vendor_list") or []))
+        c4.metric("Tokens in / out",   f"{usage.get('input_tokens', 0)} / {usage.get('output_tokens', 0)}")
+
+        st.markdown("### Analysis JSON")
+        st.json(analysis)
+
+        if vision_data:
+            st.markdown("### Vision data (per-page)")
+            st.json(vision_data)
+
+        st.markdown("### Geometry summary (per-page)")
+        st.json([p.to_dict() for p in geom_pages])
+
+    except Exception as e:
+        import traceback as _tb
+        status.update(label=f"❌ {type(e).__name__}: {e}", state="error")
+        st.exception(e)
+        st.code(_tb.format_exc(), language="text")
+
+
+def _diag_allowed() -> bool:
+    """Return True if the visitor should see the diagnostic view."""
+    try:
+        params = st.query_params
+    except AttributeError:
+        # Older Streamlit versions
+        params = st.experimental_get_query_params()
+
+    def _first(v):
+        if isinstance(v, list):
+            return v[0] if v else ""
+        return v or ""
+
+    diag = _first(params.get("diag"))
+    if not diag:
+        return False
+    # Optional: require a token if one is configured in secrets.
+    try:
+        required = st.secrets.get("DIAG_TOKEN")
+    except Exception:
+        required = None
+    if required:
+        given = _first(params.get("token"))
+        if given != required:
+            st.error("Diagnostic route is gated — append `&token=<DIAG_TOKEN>` to the URL.")
+            return True  # render nothing else but don't fall through to landing
+    return True
+
+
 # --- Router ---------------------------------------------------------------------
 
-VIEWS = {"landing": view_landing, "create": view_create, "results": view_results}
-VIEWS[st.session_state.view]()
+if _diag_allowed():
+    view_diagnostic()
+else:
+    VIEWS = {"landing": view_landing, "create": view_create, "results": view_results}
+    VIEWS[st.session_state.view]()
